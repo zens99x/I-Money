@@ -14,6 +14,7 @@
               id="fullName"
               type="text"
               placeholder="iMoney..."
+              v-model="fullName"
               class="px-4 py-3 rounded-lg border border-gray-100 mt-1"
             />
           </label>
@@ -28,6 +29,7 @@
               placeholder="exmaple@gmail.com"
               class="px-4 py-3 rounded-lg border border-gray-100 mt-1"
               autocomplete="username"
+              v-model="email"
             />
           </label>
         </div>
@@ -41,19 +43,35 @@
               placeholder="**********"
               class="px-4 py-3 rounded-lg border border-gray-100 mt-1"
               autocomplete="current-password"
+              v-model="password"
             />
           </label>
         </div>
 
         <div class="row">
           <button
+            v-if="!isPending"
             type="submit"
             class="py-3 text-center w-full bg-primary text-white font-bold rounded-lg"
           >
             Sign up
           </button>
+
+          <button
+            v-else
+            type="button"
+            class="py-3 text-center w-full text-white font-bold rounded-lg bg-gray-800 cursor-not-allowed"
+            disabled
+          >
+            Loading...
+          </button>
         </div>
       </form>
+
+      <!-- Error -->
+      <div v-if="error" class="text-left text-red mt-4">
+        <span>{{ error }}</span>
+      </div>
 
       <!-- Direction -->
       <div class="w-full text-center mt-6">
@@ -70,10 +88,21 @@
   </div>
 </template>
 <script>
+import { ref } from "vue";
+import { useSignUp } from "@/composables/useSignUp";
+
 export default {
   setup() {
-    function onSubmit() {}
-    return { onSubmit };
+    const { error, isPending, signup } = useSignUp();
+
+    const fullName = ref("");
+    const email = ref("");
+    const password = ref("");
+
+    async function onSubmit() {
+      await signup(email.value, password.value, fullName.value);
+    }
+    return { fullName, email, password, error, isPending, onSubmit };
   },
 };
 </script>

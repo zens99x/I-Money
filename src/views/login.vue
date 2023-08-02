@@ -13,6 +13,7 @@
               id="email"
               type="email"
               placeholder="exmaple@gmail.com"
+              v-model="email"
               class="px-4 py-3 rounded-lg border border-gray-100 mt-1"
               autocomplete="username"
             />
@@ -26,6 +27,7 @@
               id="password"
               type="password"
               placeholder="**********"
+              v-model="password"
               class="px-4 py-3 rounded-lg border border-gray-100 mt-1"
               autocomplete="current-password"
             />
@@ -34,10 +36,20 @@
 
         <div class="row">
           <button
+            v-if="!isPending"
             type="submit"
             class="py-3 text-center w-full bg-primary text-white font-bold rounded-lg"
           >
             Sign In
+          </button>
+
+          <button
+            v-else
+            type="button"
+            class="py-3 text-center w-full text-white font-bold rounded-lg bg-gray-800 cursor-not-allowed"
+            disabled
+          >
+            Loading...
           </button>
         </div>
       </form>
@@ -57,10 +69,19 @@
   </div>
 </template>
 <script>
+import { ref } from "vue";
+import { useSignIn } from "@/composables/useSignIn";
+
 export default {
   setup() {
-    function onSubmit() {}
-    return { onSubmit };
+    const { error, isPending, signin } = useSignIn();
+    const email = ref("");
+    const password = ref("");
+
+    async function onSubmit() {
+      await signin(email.value, password.value);
+    }
+    return { email, password, error, isPending, onSubmit };
   },
 };
 </script>
